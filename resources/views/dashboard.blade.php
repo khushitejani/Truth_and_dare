@@ -1,8 +1,5 @@
 @extends('layouts.app')
-
-@section('page_title', 'eCommerce Dashboard')
-@section('breadcrumb', 'eCommerce')
-
+@section('title', 'Dashboard')
 @section('content')
     <section class="section">
         <div class="container-fluid">
@@ -27,9 +24,8 @@
                                     </li>
                                 </ol> --}}
 
-                                <a href="javascript:void(0)"
-                                    class="main-btn primary-btn btn-hover btn-sm  open-modal" data-url="{{ route('categories.create') }}"
-                                    data-title="Create Category">
+                                <a href="javascript:void(0)" class="main-btn primary-btn btn-hover btn-sm  open-modal"
+                                    data-url="{{ route('categories.create') }}" data-title="Create Category">
                                     + Create Category
                                 </a>
 
@@ -43,42 +39,62 @@
             <!-- ========== title-wrapper end ========== -->
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="card-style mb-30">
-                        <h6 class="mb-25">Textarea</h6>
-                        <div class="input-style-1">
-                            <label>Message</label>
-                            <textarea placeholder="Message" rows="5" id="messageBox3"></textarea>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Fun">Fun</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Harsh">Harsh</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Soft">Soft</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Premium">Premium</button>
-                        </div>
-                        <div class="text-end mt-3">
-                            <a href="#" class="btn btn-primary btn-sm">Save</a>
-                        </div>
+                    <form id="truthForm" action="{{ route('truth.store') }}">
+                        @csrf
+                        <div class="card-style mb-30">
+                            <h6 class="mb-25">Truth</h6>
 
-                    </div>
+                            <div class="input-style-1">
+                                <label>Question</label>
+                                <textarea placeholder="Add Question" rows="5" id="question" name="question" required></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                @foreach ($categories as $cat)
+                                    <button type="button" class="btn btn-outline-primary btn-sm quick-btn"
+                                        data-target="#messageBox3" data-text="{{ $cat->name }}">
+                                        {{ $cat->name }}
+                                    </button>
+                                @endforeach
+                            </div>
+                            <input type="hidden" name="id" id="truth_id">
+
+                            <input type="hidden" name="category_type" id="truth_type">
+
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-lg-6">
-                    <div class="card-style mb-30">
-                        <h6 class="mb-25">Textarea</h6>
-                        <div class="input-style-1">
-                            <label>Message</label>
-                            <textarea placeholder="Message" rows="5" id="messageBox1"></textarea>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Fun">Fun</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Harsh">Harsh</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Soft">Soft</button>
-                            <button class="btn btn-outline-primary btn-sm quick-btn" data-text="Premium">Premium</button>
-                        </div>
-                        <div class="text-end mt-3">
-                            <a href="#" class="btn btn-primary btn-sm">Save</a>
-                        </div>
+                    <form id="dareForm" action="{{ route('dare.store') }}">
+                        @csrf
+                        <div class="card-style mb-30">
+                            <h6 class="mb-25">Dare</h6>
 
-                    </div>
+                            <div class="input-style-1">
+                                <label>Dare</label>
+                                <textarea placeholder="Add Dare" rows="5" id="dare" name="dare" required></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                @foreach ($categories as $cat)
+                                    <button type="button" class="btn btn-outline-primary btn-sm quick-btn"
+                                        data-target="#messageBox3" data-text="{{ $cat->name }}">
+                                        {{ $cat->name }}
+                                    </button>
+                                @endforeach
+                            </div>
+                            <input type="hidden" name="id" id="dare_id">
+
+                            <input type="hidden" name="category_type" id="dare_type">
+
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -86,12 +102,17 @@
                 <div class="col-lg-12">
                     <div class="card-style mb-30">
                         <h6 class="mb-10">Data Table</h6>
-                        <p class="text-sm mb-20">
-                            For basic styling—light padding and only horizontal
-                            dividers—use the class table.
-                        </p>
+                        <div class="mb-3">
+                            <label for="filter-type" class="form-label">Select Type:</label>
+                            <select id="filter-type" class="form-select form-select-sm w-auto d-inline-block">
+                                <option value="Truth">Truth</option>
+                                <option value="Dare">Dare</option>
+                                <option value="Category">Category</option>
+                            </select>
+
+                        </div>
                         <div class="table-wrapper table-responsive">
-                            <table class="table">
+                            <table class="table" id="dynamic-table">
                                 <thead>
                                     <tr>
                                         <th>
@@ -100,185 +121,17 @@
                                         <th>
                                             <h6>Name</h6>
                                         </th>
-                                        <th>
-                                            <h6>Email</h6>
-                                        </th>
-                                        <th>
-                                            <h6>Project</h6>
-                                        </th>
-                                        <th>
-                                            <h6>Status</h6>
+                                        <th id="type-header">
+                                            <h6>Type</h6>
                                         </th>
                                         <th>
                                             <h6>Action</h6>
                                         </th>
                                     </tr>
-                                    <!-- end table row-->
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-1.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td class="min-width">
-                                            <p>Esther Howard</p>
-                                        </td>
-                                        <td class="min-width">
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td class="min-width">
-                                            <p>Admin Dashboard Design</p>
-                                        </td>
-                                        <td class="min-width">
-                                            <span class="status-btn active-btn">Active</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-2.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td class="min-width">
-                                            <p>D. Jonathon</p>
-                                        </td>
-                                        <td class="min-width">
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td class="min-width">
-                                            <p>React Dashboard</p>
-                                        </td>
-                                        <td class="min-width">
-                                            <span class="status-btn active-btn">Active</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-3.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p>John Doe</p>
-                                        </td>
-                                        <td>
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td>
-                                            <p>Bootstrap Template</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn success-btn">Done</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-4.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p>Rayhan Jamil</p>
-                                        </td>
-                                        <td>
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td>
-                                            <p>Css Grid Template</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn info-btn">Pending</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-5.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p>Esther Howard</p>
-                                        </td>
-                                        <td>
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td>
-                                            <p>Admin Dashboard Design</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn close-btn">Close</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
-                                    <tr>
-                                        <td>
-                                            <div class="employee-image">
-                                                <img src="assets/images/lead/lead-6.png" alt="" />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p>Anee Doe</p>
-                                        </td>
-                                        <td>
-                                            <p><a href="#0">yourmail@gmail.com</a></p>
-                                        </td>
-                                        <td>
-                                            <p>Space Template Update</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn active-btn">Active</span>
-                                        </td>
-                                        <td>
-                                            <div class="action">
-                                                <button class="text-danger">
-                                                    <i class="lni lni-trash-can"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- end table row -->
                                 </tbody>
+
                             </table>
                             <!-- end table -->
                         </div>
@@ -288,66 +141,332 @@
                 <!-- end col -->
             </div>
     </section>
+    @push('styles')
+        <style>
+            .d-flex button.quick-btn.active,
+            .d-flex button.quick-btn.active:hover,
+            .d-flex button.quick-btn.active:focus {
+                background-color: #0d6efd !important;
+                color: #fff !important;
+                border-color: #0d6efd !important;
+            }
+
+            button.quick-btn {
+                transition: background-color .12s ease, color .12s ease;
+            }
+        </style>
+    @endpush
 @endsection
 
 @push('scripts')
     <script>
-        // function loadCategoriesTable() {
-        //     $.ajax({
-        //         url: '{{ route('categories.index') }}', // route to reload categories table
-        //         type: 'GET',
-        //         dataType: 'html',
-        //         success: function(response) {
-        //             const newRows = $(response).find('#categories-table-rows').html();
-        //             $('#categories-table-rows').html(newRows);
-        //         },
-        //         error: function() {
-        //             toastr.error('Failed to reload categories table.');
-        //         }
-        //     });
-        // }    
+        $(document).ready(function() {
+            $('.quick-btn').on('click', function() {
+                $(this).siblings().removeClass('active');
+                $(this).addClass('active');
+                const formId = $(this).closest('form').attr('id');
+                if (formId === 'truthForm') $('#truth_type').val($(this).data('text'));
+                if (formId === 'dareForm') $('#dare_type').val($(this).data('text'));
+            });
 
-        $(document).on('submit', '#categoryForm', function(e) {
-            alert('asdjidiasufhsjkhi');
-            e.preventDefault();
-            let form = $(this);
-            let url = form.attr('action');
-            let formData = new FormData(this);
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(res) {
-                    if (res.success) {
-                          toastr.success(res.message || 'Category saved successfully');
-                        $('#commonModal').modal('hide');
-                    } else {
-                        toastr.error(res.message || 'Something went wrong');
+            function loadDynamicTable() {
+                $.ajax({
+                    url: '{{ route('dashboard') }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(res) {
+                        let tbody = '',
+                            index = 1;
+
+                        if (res.truths) res.truths.forEach(item => {
+                            console.log(item);
+                            tbody += `<tr data-type="Truth">
+                        <td>${index++}</td>
+                        <td>${item.question}</td>
+                        <td>${item.type}</td>
+                          <td class="text-end">
+                            <i class="lni lni-pencil-alt edit-btn" style="cursor:pointer; color:#0d6efd;" 
+                               data-type="Truth" data-id="${item.id}" title="Edit"></i>
+                            &nbsp;
+                            <i class="lni lni-trash-can delete-btn" style="cursor:pointer; color:red;" 
+                               data-type="Truth" data-id="${item.id}" title="Delete"></i>
+                        </td>
+
+                    </tr>`;
+                        });
+
+                        if (res.dares) res.dares.forEach(item => {
+                            tbody += `<tr data-type="Dare">
+                        <td>${index++}</td>
+                        <td>${item.dare}</td>
+                        <td>${item.type}</td>
+                        <td class="text-end">
+                            <i class="lni lni-pencil-alt edit-btn" style="cursor:pointer; color:#0d6efd;" 
+                               data-type="Dare" data-id="${item.id}" title="Edit"></i>
+                            &nbsp;
+                            <i class="lni lni-trash-can delete-btn" style="cursor:pointer; color:red;" 
+                               data-type="Dare" data-id="${item.id}" title="Delete"></i>
+                        </td>
+
+                    </tr>`;
+                        });
+
+                        if (res.categories) res.categories.forEach(item => {
+                            tbody += `<tr data-type="Category">
+                        <td>${index++}</td>
+                        <td>${item.name}</td>
+                       <td>
+                        <button class="btn btn-sm btn-info edit-btn" data-type="Category" data-id="${item.id}">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-type="Category" data-id="${item.id}">Delete</button>
+                    </td>
+                    </tr>`;
+                        });
+
+                        if (!tbody) tbody =
+                            `<tr><td colspan="4" class="text-center">No entries found.</td></tr>`;
+                        $('#dynamic-table tbody').html(tbody);
+                        applyFilter();
+                    },
+                    error: function() {
+                        toastr.error('Failed to load table data.');
                     }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
-                    } else {
-                        toastr.error('Unexpected error occurred.');
-                    }
+                });
+            }
+
+            function applyFilter() {
+                const selectedType = $('#filter-type').val();
+                $('#dynamic-table tbody tr').each(function() {
+                    $(this).toggle($(this).data('type') === selectedType);
+                });
+
+                updateTableNumbers();
+                toggleTypeColumn();
+            }
+
+            function toggleTypeColumn() {
+                const selectedType = $('#filter-type').val();
+                if (selectedType === 'Category') {
+                    $('#type-header').hide();
+                } else {
+                    $('#type-header').show();
                 }
+            }
+
+            function updateTableNumbers() {
+                let count = 1;
+                $('#dynamic-table tbody tr:visible').each(function() {
+                    $(this).find('td:first').text(count++);
+                });
+            }
+            $('#filter-type').on('change', applyFilter);
+
+            function submitForm(formId) {
+                let form = $(formId);
+                let url = form.attr('action');
+                let formData = new FormData(form[0]);
+
+                return $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                });
+            }
+            $('#truthForm').on('submit', function(e) {
+                e.preventDefault();
+
+                if ($('#truthForm .quick-btn.active').length === 0) {
+                    toastr.warning('Please select at least one option for Truth');
+                    return;
+                }
+
+                let formData = new FormData(this);
+                let id = $('#truth_id').val();
+                if (id) formData.append('_method', 'PUT');
+
+                $.ajax({
+                    url: id ? `/truth/${id}` : $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(id ? 'Truth updated successfully' :
+                                'Truth saved successfully');
+                            loadDynamicTable();
+                            $('#truthForm')[0].reset();
+                            $('#truthForm .quick-btn').removeClass('active');
+                            $('#truth_type').val('');
+                        } else {
+                            toastr.error(res.message || 'Error saving truth');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Unexpected error occurred');
+                    }
+                });
             });
-        });
 
 
-        document.querySelectorAll('.quick-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                let text = btn.getAttribute('data-text');
-                let box = document.getElementById('messageBox');
+            $('#dareForm').on('submit', function(e) {
+                e.preventDefault();
 
-                // Add text with spacing
-                box.value += (box.value ? ', ' : '') + text;
+                if ($('#dareForm .quick-btn.active').length === 0) {
+                    toastr.warning('Please select at least one option for Dare');
+                    return;
+                }
+
+                let formData = new FormData(this);
+                let id = $('#dare_id').val(); // get ID for edit
+                if (id) formData.append('_method', 'PUT'); // add _method for updates
+
+                $.ajax({
+                    url: id ? `/dare/${id}` : $(this).attr('action'),
+                    type: 'POST', // always POST
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(id ? 'Dare updated successfully' :
+                                'Dare saved successfully');
+                            loadDynamicTable();
+                            $('#dareForm')[0].reset();
+                            $('#dareForm .quick-btn').removeClass('active');
+                            $('#dare_type').val('');
+                        } else {
+                            toastr.error(res.message || 'Error saving dare');
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422 && xhr.responseJSON.errors) {
+                            // Laravel validation errors
+                            let errors = xhr.responseJSON.errors;
+                            Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
+                        } else {
+                            toastr.error('Unexpected error occurred');
+                        }
+                    }
+                });
             });
+
+            $(document).on('submit', '#categoryForm', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                let url = form.attr('action');
+                let formData = new FormData(this);
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.message || 'Category saved successfully');
+                            $('#commonModal').modal('hide');
+                            loadDynamicTable();
+                        } else {
+                            toastr.error(res.message || 'Something went wrong');
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
+                        } else {
+                            toastr.error('Unexpected error occurred.');
+                        }
+                    }
+                });
+            });
+
+            $('form').on('submit', function(e) {
+                const $form = $(this);
+                setTimeout(function() {
+                    $form.find('.quick-btn').removeClass(
+                        'active');
+                    if ($form.attr('id') === 'truthForm') {
+                        $('#truth_type').val('');
+                    }
+                    if ($form.attr('id') === 'dareForm') {
+                        $('#dare_type').val('');
+                    }
+                }, 50);
+            });
+            $(document).on('click', '.delete-btn', function() {
+                let type = $(this).data('type');
+                let id = $(this).data('id');
+
+                if (!confirm("Are you sure?")) return;
+
+                $.ajax({
+                    url: `/${type.toLowerCase()}/${id}`,
+                    type: 'POST',
+                    data: {
+                        _method: 'DELETE',
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        toastr.success(res.message || `${type} deleted`);
+                        loadDynamicTable();
+                    }
+                });
+            });
+            $(document).on('click', '.edit-btn', function() {
+                let type = $(this).data('type');
+                let id = $(this).data('id');
+
+                $.ajax({
+                    url: `/${type.toLowerCase()}/${id}/edit`,
+                    type: 'GET',
+                    success: function(res) {
+                        console.log(res);
+                        if (type === 'Truth') {
+                            $('#truthForm #question').val(res.question);
+                            $('#truthForm #truth_type').val(res.type);
+                            $('#truthForm #truth_id').val(res.id);
+
+                            // Highlight matching category button (case-insensitive, trim)
+                            $('#truthForm .quick-btn').removeClass('active');
+                            $('#truthForm .quick-btn').each(function() {
+                                if ($(this).data('text').toString().trim()
+                                    .toLowerCase() === res.type.toString().trim()
+                                    .toLowerCase()) {
+                                    $(this).addClass('active');
+                                }
+                            });
+                        }
+
+                        if (type === 'Dare') {
+                            $('#dareForm #dare').val(res.dare);
+                            $('#dareForm #dare_type').val(res.type);
+                            $('#dareForm #dare_id').val(res.id);
+
+                            $('#dareForm .quick-btn').removeClass('active');
+                            $('#dareForm .quick-btn').each(function() {
+                                if ($(this).data('text').toString().trim()
+                                    .toLowerCase() === res.type.toString().trim()
+                                    .toLowerCase()) {
+                                    $(this).addClass('active');
+                                }
+                            });
+                        }
+
+                        if (type === 'Category') {
+                            $('#commonModal .modal-body input[name="name"]').val(res.name);
+                            $('#commonModal .modal-body input[name="id"]').val(res.id);
+                            $('#commonModal').modal('show');
+                        }
+                    }
+                });
+            });
+
+            loadDynamicTable();
         });
     </script>
 @endpush
