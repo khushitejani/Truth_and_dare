@@ -216,11 +216,18 @@
                             tbody += `<tr data-type="Category">
                         <td>${index++}</td>
                         <td>${item.name}</td>
-                       <td>
-                        <button class="btn btn-sm btn-info edit-btn" data-type="Category" data-id="${item.id}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-btn" data-type="Category" data-id="${item.id}">Delete</button>
-                    </td>
-                    </tr>`;
+                        <td class="text-end">  
+                        <i class="lni lni-pencil-alt edit-btn"
+                            style="cursor:pointer; color:#0d6efd;"
+                            data-type="Category"
+                            data-id="${item.id}" 
+                            data-url="/categories/${item.id}/edit"
+                            title="Edit"></i>
+                            &nbsp;
+                            <i class="lni lni-trash-can delete-btn" style="cursor:pointer; color:red;" 
+                            data-type="Category" data-id="${item.id}" title="Delete"></i>
+                        </td>
+                        </tr>`;
                         });
 
                         if (!tbody) tbody =
@@ -320,12 +327,12 @@
                 }
 
                 let formData = new FormData(this);
-                let id = $('#dare_id').val(); // get ID for edit
-                if (id) formData.append('_method', 'PUT'); // add _method for updates
+                let id = $('#dare_id').val();
+                if (id) formData.append('_method', 'PUT');
 
                 $.ajax({
                     url: id ? `/dare/${id}` : $(this).attr('action'),
-                    type: 'POST', // always POST
+                    type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
@@ -343,7 +350,6 @@
                     },
                     error: function(xhr) {
                         if (xhr.status === 422 && xhr.responseJSON.errors) {
-                            // Laravel validation errors
                             let errors = xhr.responseJSON.errors;
                             Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
                         } else {
@@ -353,29 +359,60 @@
                 });
             });
 
+            // $(document).on('submit', '#categoryForm', function(e) {
+            //     e.preventDefault();
+            //     let form = $(this);
+            //     let url = form.attr('action');
+            //     let formData = new FormData(this);
+
+            //     $.ajax({
+            //         url: url,
+            //         type: 'POST',
+            //         data: formData,
+            //         processData: false,
+            //         contentType: false,
+            //         success: function(res) {
+            //             if (res.success) {
+            //                 toastr.success(res.message || 'Category saved successfully');
+            //                 $('#commonModal').modal('hide');
+            //                 loadDynamicTable();
+            //             } else {
+            //                 toastr.error(res.message || 'Something went wrong');
+            //             }
+            //         },
+            //         error: function(xhr) {
+            //             if (xhr.status === 422) {
+            //                 let errors = xhr.responseJSON.errors;
+            //                 Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
+            //             } else {
+            //                 toastr.error('Unexpected error occurred.');
+            //             }
+            //         }
+            //     });
+            // });
             $(document).on('submit', '#categoryForm', function(e) {
                 e.preventDefault();
+
                 let form = $(this);
-                let url = form.attr('action');
                 let formData = new FormData(this);
 
+                if (form.find('input[name="id"]').val()) {
+                    formData.append('_method', 'PUT');
+                }
+
                 $.ajax({
-                    url: url,
+                    url: form.attr('action'),
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        if (res.success) {
-                            toastr.success(res.message || 'Category saved successfully');
-                            $('#commonModal').modal('hide');
-                            loadDynamicTable();
-                        } else {
-                            toastr.error(res.message || 'Something went wrong');
-                        }
+                        toastr.success('Category saved successfully');
+                        $('#commonModal').modal('hide');
+                        loadDynamicTable(); // Refresh table with updated value
                     },
                     error: function(xhr) {
-                        if (xhr.status === 422) {
+                        if (xhr.status === 422 && xhr.responseJSON.errors) {
                             let errors = xhr.responseJSON.errors;
                             Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
                         } else {
@@ -384,7 +421,6 @@
                     }
                 });
             });
-
             $('form').on('submit', function(e) {
                 const $form = $(this);
                 setTimeout(function() {
@@ -430,8 +466,6 @@
                             $('#truthForm #question').val(res.question);
                             $('#truthForm #truth_type').val(res.type);
                             $('#truthForm #truth_id').val(res.id);
-
-                            // Highlight matching category button (case-insensitive, trim)
                             $('#truthForm .quick-btn').removeClass('active');
                             $('#truthForm .quick-btn').each(function() {
                                 if ($(this).data('text').toString().trim()
@@ -456,16 +490,26 @@
                                 }
                             });
                         }
-
                         if (type === 'Category') {
-                            $('#commonModal .modal-body input[name="name"]').val(res.name);
-                            $('#commonModal .modal-body input[name="id"]').val(res.id);
-                            $('#commonModal').modal('show');
+                            $.ajax({
+                                url: `/categories/${id}/edit`,
+                                type: 'GET',
+                                success: function(res) {
+                                    $('#commonModal .modal-body input[name="name"]')
+                                        .val(res.name);
+                                    $('#commonModal .modal-body input[name="id"]')
+                                        .val(res.id);
+                                    $('#commonModal').modal('show');
+                                },
+                                error: function() {
+                                    toastr.error('Failed to fetch category data.');
+                                }
+                            });
                         }
+
                     }
                 });
             });
-
             loadDynamicTable();
         });
     </script>

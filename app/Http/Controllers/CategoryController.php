@@ -41,12 +41,32 @@ class CategoryController extends Controller
 
 
     // Show edit form
+    // public function edit($id)
+    // {
+    //     $category = Category::findOrFail($id);
+    //     return view('categories.edit', compact('category'));
+    // }
+
+    // // Update category
+    // public function update(Request $request, Category $category)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //     ]);
+
+    //     $category->update([
+    //         'name' => $request->name,
+    //         'description' => $request->description,
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Category updated successfully!');
+    // }
     public function edit(Category $category)
     {
         return view('categories.edit', compact('category'));
     }
 
-    // Update category
     public function update(Request $request, Category $category)
     {
         $request->validate([
@@ -54,13 +74,18 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $category->update([
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        $category->update($request->only('name', 'description'));
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category updated successfully!'
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Category updated successfully!');
     }
+
 
     // Delete category
     public function destroy(Category $category)

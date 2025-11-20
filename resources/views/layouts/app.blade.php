@@ -94,7 +94,7 @@
         });
         $(document).on('click', '.open-modal', function(e) {
             e.preventDefault();
-            let url = $(this).data('url'); // get URL from data-url attribute
+            let url = $(this).data('url'); 
             const title = $(this).data('title') || 'Modal';
             $('#commonModal .modal-title').text(title);
             $('#commonModal .modal-body').load(url, function() {
