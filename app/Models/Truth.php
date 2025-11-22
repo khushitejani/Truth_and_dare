@@ -10,6 +10,11 @@ class Truth extends Model
     use HasFactory;
     protected $fillable = [
         'type',
-        'question', 
+        'question',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'type'); 
+    }
 }

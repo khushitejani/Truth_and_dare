@@ -12,4 +12,9 @@ class Dare extends Model
         'type',
         'dare',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'type');
+    }
 }

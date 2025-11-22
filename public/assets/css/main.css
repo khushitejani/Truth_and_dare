@@ -3868,7 +3868,7 @@ h6,
   transition: all 0.3s ease-out 0s;
   /* margin-left: 250px; */
   min-height: 100vh;
-  padding-bottom: 85px;
+  /* padding-bottom: 85px; */
   position: relative;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px), only screen and (min-width: 768px) and (max-width: 991px), (max-width: 767px) {
@@ -3878,7 +3878,7 @@ h6,
 }
 @media (max-width: 767px) {
   .main-wrapper {
-    padding-bottom: 110px;
+    /* padding-bottom: 110px; */
   }
 }
 .main-wrapper.active {
@@ -3889,10 +3889,10 @@ h6,
   padding-right: 40px;
 }
 @media (max-width: 767px) {
-  .main-wrapper .container-fluid {
+  /* .main-wrapper .container-fluid {
     padding-left: 20px;
-    padding-right: 20px;
-  }
+    padding-right: 20px; */
+  /* } */
 }
 .main-wrapper .footer {
   padding: 25px 0;

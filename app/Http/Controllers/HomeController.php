@@ -17,12 +17,22 @@ class HomeController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'truths' => $truths->map(fn($t) => ['id' => $t->id, 'question' => $t->question, 'type' => $t->type]),
-                'dares' => $dares->map(fn($d) => ['id' => $d->id, 'dare' => $d->dare, 'type' => $d->type]),
+                'truths' => $truths->map(fn($t) => ['id' => $t->id, 'question' => $t->question, 'type' => $t->category?->name ?? '',]),
+                'dares' => $dares->map(fn($d) => ['id' => $d->id, 'dare' => $d->dare, 'type' => $d->category?->name ?? '',]),
                 'categories' => $categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name]),
             ]);
         }
 
         return view('dashboard', compact('truths', 'dares', 'categories'));
+    }
+
+    // public function showForm()
+    // {
+    //     return view('bulk-import');
+    // }
+    public function showForm()
+    {
+        $categories = Category::orderBy('id', 'desc')->get();
+        return view('bulk-import', compact('categories'));
     }
 }

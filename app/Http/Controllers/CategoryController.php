@@ -23,45 +23,11 @@ class CategoryController extends Controller
     // Store new category
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        Category::create(['name' => $request->name]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Category created successfully!'
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Category created successfully!');
+        $request->validate(['name' => 'required|string|max:255']);
+        $category = Category::create(['name' => $request->name]);
+        return response()->json(['success' => true, 'message' => 'Category created successfully!']);
     }
 
-
-    // Show edit form
-    // public function edit($id)
-    // {
-    //     $category = Category::findOrFail($id);
-    //     return view('categories.edit', compact('category'));
-    // }
-
-    // // Update category
-    // public function update(Request $request, Category $category)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //     ]);
-
-    //     $category->update([
-    //         'name' => $request->name,
-    //         'description' => $request->description,
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Category updated successfully!');
-    // }
     public function edit(Category $category)
     {
         return view('categories.edit', compact('category'));
@@ -69,21 +35,9 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $category->update($request->only('name', 'description'));
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Category updated successfully!'
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Category updated successfully!');
+        $request->validate(['name' => 'required|string|max:255']);
+        $category->update(['name' => $request->name]);
+        return response()->json(['success' => true, 'message' => 'Category updated successfully!']);
     }
 
 

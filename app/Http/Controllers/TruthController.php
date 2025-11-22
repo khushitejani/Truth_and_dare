@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Truth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class TruthController extends Controller
 {
@@ -30,12 +33,12 @@ class TruthController extends Controller
     {
         $request->validate([
             'question' => 'required|string',
-            'category_type' => 'nullable|string'
+            'category_id' => 'nullable|string'
         ]);
 
         Truth::create([
             'question' => $request->question,
-            'type' => $request->category_type,
+            'type' => $request->category_id,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Truth saved successfully']);
@@ -70,14 +73,14 @@ class TruthController extends Controller
     {
         $request->validate([
             'question' => 'required|string',
-            'category_type' => 'nullable|string'
+            'category_id' => 'nullable|string'
         ]);
 
         $truth = Truth::findOrFail($id);
 
         $truth->update([
             'question' => $request->question,
-            'type' => $request->category_type,
+            'type' => $request->category_id,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Truth updated successfully', 'id' => $truth->id]);
@@ -92,5 +95,52 @@ class TruthController extends Controller
         $truth->delete();
 
         return response()->json(['success' => true, 'message' => 'Truth deleted successfully']);
+    }
+    public function importTruth(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt,xlsx,xls',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        $spreadsheet = IOFactory::load($path);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, false);
+
+        $header = array_map('strtolower', $rows[0]);
+
+        $questionIndex = array_search('question', $header);
+        $typeIndex     = array_search('type', $header);
+
+        if ($questionIndex === false || $typeIndex === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The file must contain column headers: question, type'
+            ], 422);
+        }
+
+        unset($rows[0]);
+
+        foreach ($rows as $row) {
+
+            $question = trim($row[$questionIndex] ?? '');
+            $typeName = ucfirst(strtolower(trim($row[$typeIndex] ?? '')));
+
+            if (!$question || !$typeName) continue;
+
+            $category = Category::firstOrCreate(['name' => $typeName]);
+
+            $truth = Truth::create([
+                'question' => $question,
+                'type'     => $category->id
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Truths imported successfully'
+        ]);
     }
 }
